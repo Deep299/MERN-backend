@@ -5,6 +5,5 @@ const {
 const router = express.Router();
 
 router.post("/api/productCategory/add", saveProductCategory);
-// router.post("/api/productCategory/getAll", updateUser);
 
 module.exports = router;
