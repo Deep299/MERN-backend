@@ -53,4 +53,4 @@ const saveUser = async (req, res) => {
 //   }
 // };
 
-module.exports = { saveUser, updateUser };
+module.exports = { saveUser };

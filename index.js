@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const cors = require("./config/cors");
 const formRoutes = require("./routes/formRoutes");
 const userRoutes = require("./routes/userRoutes");
+const productCategoryRoutes = require("./routes/productCategoryRoutes");
 
 const app = express();
 const PORT = 5001;
@@ -15,6 +16,7 @@ connectDB();
 
 app.use(formRoutes);
 app.use(userRoutes);
+app.use(productCategoryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port 5001`);
