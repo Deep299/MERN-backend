@@ -99,10 +99,34 @@ const deleteManyProductCategories = async (req, res) => {
   }
 };
 
+const updateProductCategory = async (req, res) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+  try {
+    const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
+      id,
+      { name, description },
+      { new: true }
+    );
+    if (!updatedProductCategory) {
+      return res.status(404).json({ error: "Product category not found" });
+    }
+    console.log(
+      "Product category updated successfully:",
+      updatedProductCategory
+    );
+    res.status(200).json({ message: "Product category updated successfully" });
+  } catch (err) {
+    console.error("Error updating product category:", err);
+    res.status(500).json({ error: "Error updating product category" });
+  }
+};
+
 module.exports = {
   saveProductCategory,
   deleteProductCategory,
   getProductCategory,
   deleteManyProductCategories,
   getAllProductCategories,
+  updateProductCategory,
 };
