@@ -4,7 +4,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/user/create:
+ * /api/users/create:
  *   post:
  *     summary: Create a new user
  *     tags: [User]
@@ -15,11 +15,15 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               username:
+ *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               email:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               telephone:
  *                 type: string
  *     responses:
  *       201:
@@ -27,11 +31,11 @@ const router = express.Router();
  *       400:
  *         description: Error creating user
  */
-router.post("/api/user/create", saveUser);
+router.post("/api/users/create", saveUser);
 
 /**
  * @swagger
- * /api/user/signin:
+ * /api/users/signin:
  *   post:
  *     summary: Sign in a user
  *     tags: [User]
@@ -54,6 +58,6 @@ router.post("/api/user/create", saveUser);
  *       500:
  *         description: Error signing in user
  */
-router.post("/api/user/signin", signInUser);
+router.post("/api/users/signin", signInUser);
 
 module.exports = router;

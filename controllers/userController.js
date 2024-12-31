@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 const saveUser = async (req, res) => {
@@ -70,7 +71,14 @@ const signInUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    res.status(200).json({ message: "Sign-in successful", user });
+    // Generate JWT token
+    const token = jwt.sign(
+      { _id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ message: "Sign-in successful", token });
   } catch (err) {
     console.error("Error signing in user:", err);
     res.status(500).json({ error: "Error signing in user" });

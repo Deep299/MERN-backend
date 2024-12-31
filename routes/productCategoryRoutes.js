@@ -8,6 +8,7 @@ const {
   updateProductCategory,
 } = require("../controllers/productCategoryController");
 const basicAuth = require("../config/basicAuth");
+const authMiddleware = require("../config/authMiddleware");
 const router = express.Router();
 
 /**
@@ -37,7 +38,7 @@ const router = express.Router();
  *       500:
  *         description: Error saving product category
  */
-router.post("/api/productCategory/add", basicAuth, saveProductCategory);
+router.post("/api/productCategory/add", authMiddleware, saveProductCategory);
 
 /**
  * @swagger
@@ -55,7 +56,11 @@ router.post("/api/productCategory/add", basicAuth, saveProductCategory);
  *       500:
  *         description: Error getting product categories
  */
-router.get("/api/productCategory/getAll", basicAuth, getAllProductCategories);
+router.get(
+  "/api/productCategory/getAll",
+  authMiddleware,
+  getAllProductCategories
+);
 
 /**
  * @swagger
@@ -80,7 +85,7 @@ router.get("/api/productCategory/getAll", basicAuth, getAllProductCategories);
  *       500:
  *         description: Error getting product category
  */
-router.get("/api/productCategory/get/:id", basicAuth, getProductCategory);
+router.get("/api/productCategory/get/:id", authMiddleware, getProductCategory);
 
 /**
  * @swagger
@@ -107,7 +112,7 @@ router.get("/api/productCategory/get/:id", basicAuth, getProductCategory);
  */
 router.delete(
   "/api/productCategory/delete/:id",
-  basicAuth,
+  authMiddleware,
   deleteProductCategory
 );
 
@@ -140,7 +145,7 @@ router.delete(
  */
 router.delete(
   "/api/productCategory/deleteMany",
-  basicAuth,
+  authMiddleware,
   deleteManyProductCategories
 );
 
@@ -180,6 +185,10 @@ router.delete(
  *       500:
  *         description: Error updating product category
  */
-router.put("/api/productCategory/update/:id", basicAuth, updateProductCategory);
+router.put(
+  "/api/productCategory/update/:id",
+  authMiddleware,
+  updateProductCategory
+);
 
 module.exports = router;
