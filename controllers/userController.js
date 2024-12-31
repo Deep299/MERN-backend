@@ -3,6 +3,22 @@ const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
+const generateAccessToken = (user) => {
+  return jwt.sign(
+    { _id: user._id, email: user.email },
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NTYiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE3MzU2ODcxNTh9.Jw_PYkwQBUwRxDYh7WCmVqL0aUphDoCesZrWzm_Tz4s",
+    { expiresIn: "1m" }
+  );
+};
+
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { _id: user._id, email: user.email },
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NTYiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE3MzYyOTEwNTh9.ZjxIcPmI9VPnenJAsMmFRo7CfcSalVHUHlQhRw7qllQ",
+    { expiresIn: "3m" }
+  );
+};
+
 const saveUser = async (req, res) => {
   console.log(req.body);
   const { email, first_name, last_name, telephone, password } = req.body;
@@ -71,18 +87,17 @@ const signInUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { _id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    // Generate tokens
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    res.status(200).json({ message: "Sign-in successful", token });
+    res
+      .status(200)
+      .json({ message: "Sign-in successful", accessToken, refreshToken });
   } catch (err) {
     console.error("Error signing in user:", err);
     res.status(500).json({ error: "Error signing in user" });
   }
 };
 
-module.exports = { saveUser, signInUser };
+module.exports = { saveUser, signInUser, generateAccessToken };

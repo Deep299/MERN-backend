@@ -47,9 +47,9 @@ router.post("/api/users/create", saveUser);
  *             type: object
  *             properties:
  *               email:
- *                 type: string
+ *                 type: akshatp@gmail.com
  *               password:
- *                 type: string
+ *                 type: Pass2000
  *     responses:
  *       200:
  *         description: Sign-in successful

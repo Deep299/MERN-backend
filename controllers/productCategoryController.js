@@ -2,16 +2,9 @@ const ProductCategory = require("../models/productCategory");
 
 const getAllProductCategories = async (req, res) => {
   try {
-    const productCategories = await ProductCategory.find();
-
-    if (productCategories.length === 0) {
-      return res.status(404).json({ error: "No product categories found" });
-    }
-
-    console.log("Product categories found:", productCategories);
-    res.status(200).json({ productCategories });
+    const categories = await ProductCategory.find();
+    res.status(200).json(categories);
   } catch (err) {
-    console.error("Error getting product categories:", err);
     res.status(500).json({ error: "Error getting product categories" });
   }
 };
@@ -19,82 +12,48 @@ const getAllProductCategories = async (req, res) => {
 const getProductCategory = async (req, res) => {
   const { id } = req.params;
   try {
-    const productCategory = await ProductCategory.findById(id);
-
-    if (!productCategory) {
+    const category = await ProductCategory.findById(id);
+    if (!category) {
       return res.status(404).json({ error: "Product category not found" });
     }
-
-    console.log("Product category found:", productCategory);
-    res.status(200).json({ productCategory });
+    res.status(200).json(category);
   } catch (err) {
-    console.error("Error getting product category:", err);
     res.status(500).json({ error: "Error getting product category" });
   }
 };
 
 const saveProductCategory = async (req, res) => {
-  console.log(req.body);
   const { name, description } = req.body;
-
-  const newProductCategory = new ProductCategory({ name, description });
-
   try {
-    const savedProductCategory = await newProductCategory.save();
-    console.log("Product category saved successfully:", savedProductCategory);
-    res.status(200).json({ message: "Product category saved successfully" });
+    const newCategory = new ProductCategory({ name, description });
+    const savedCategory = await newCategory.save();
+    res.status(200).json(savedCategory);
   } catch (err) {
-    if (err.code === 11000) {
-      // Duplicate key error
-      console.error("Error saving product category: Duplicate category name");
-      res.status(400).json({ error: "Category name must be unique" });
-    } else {
-      console.error("Error saving product category:", err);
-      res.status(500).json({ error: "Error saving product category" });
-    }
+    res.status(500).json({ error: "Error saving product category" });
   }
 };
 
 const deleteProductCategory = async (req, res) => {
   const { id } = req.params;
-
   try {
-    const deletedProductCategory = await ProductCategory.findByIdAndDelete(id);
-
-    if (!deletedProductCategory) {
+    const deletedCategory = await ProductCategory.findByIdAndDelete(id);
+    if (!deletedCategory) {
       return res.status(404).json({ error: "Product category not found" });
     }
-
-    console.log(
-      "Product category deleted successfully:",
-      deletedProductCategory
-    );
     res.status(200).json({ message: "Product category deleted successfully" });
   } catch (err) {
-    console.error("Error deleting product category:", err);
     res.status(500).json({ error: "Error deleting product category" });
   }
 };
 
 const deleteManyProductCategories = async (req, res) => {
   const { ids } = req.body;
-
   try {
     const result = await ProductCategory.deleteMany({ _id: { $in: ids } });
-
-    if (result.deletedCount === 0) {
-      return res
-        .status(404)
-        .json({ error: "No product categories found to delete" });
-    }
-
-    console.log("Product categories deleted successfully:", result);
-    res.status(200).json({
-      message: "Product categories deleted successfully",
-      deletedCount: result.deletedCount,
-    });
+    res
+      .status(200)
+      .json({ message: "Product categories deleted successfully", result });
   } catch (err) {
-    console.error("Error deleting product categories:", err);
     res.status(500).json({ error: "Error deleting product categories" });
   }
 };
@@ -103,30 +62,25 @@ const updateProductCategory = async (req, res) => {
   const { id } = req.params;
   const { name, description } = req.body;
   try {
-    const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
+    const updatedCategory = await ProductCategory.findByIdAndUpdate(
       id,
       { name, description },
       { new: true }
     );
-    if (!updatedProductCategory) {
+    if (!updatedCategory) {
       return res.status(404).json({ error: "Product category not found" });
     }
-    console.log(
-      "Product category updated successfully:",
-      updatedProductCategory
-    );
-    res.status(200).json({ message: "Product category updated successfully" });
+    res.status(200).json(updatedCategory);
   } catch (err) {
-    console.error("Error updating product category:", err);
     res.status(500).json({ error: "Error updating product category" });
   }
 };
 
 module.exports = {
+  getAllProductCategories,
+  getProductCategory,
   saveProductCategory,
   deleteProductCategory,
-  getProductCategory,
   deleteManyProductCategories,
-  getAllProductCategories,
   updateProductCategory,
 };
