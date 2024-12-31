@@ -5,6 +5,7 @@ const formRoutes = require("./routes/formRoutes");
 const userRoutes = require("./routes/userRoutes");
 const productCategoryRoutes = require("./routes/productCategoryRoutes");
 const { swaggerUi, specs } = require("./config/swaggerConfig");
+const productInventoryRoutes = require("./routes/productInventoryRoutes");
 
 const app = express();
 const PORT = 5001;
@@ -18,6 +19,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs)); // Serve Swagger 
 app.use(formRoutes);
 app.use(userRoutes);
 app.use(productCategoryRoutes);
+app.use(productInventoryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port 5001`);

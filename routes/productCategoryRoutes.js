@@ -6,7 +6,7 @@ const {
   getAllProductCategories,
   getProductCategory,
   updateProductCategory,
-} = require("../controllers/productCategoryContoller");
+} = require("../controllers/productCategoryController");
 const basicAuth = require("../config/basicAuth");
 const router = express.Router();
 
