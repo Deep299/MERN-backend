@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   telephone: {
     type: String,
     required: false,
@@ -24,6 +28,18 @@ const userSchema = new mongoose.Schema({
   modified_at: {
     type: Date,
     default: Date.now,
+  },
+  last_login: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    default: "active",
+  },
+  role: {
+    type: String,
+    default: "user",
   },
 });
 

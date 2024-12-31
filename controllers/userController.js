@@ -1,19 +1,45 @@
+const bcrypt = require("bcrypt");
+const validator = require("validator");
 const User = require("../models/user");
 
 const saveUser = async (req, res) => {
   console.log(req.body);
-  const { email, first_name, last_name, telephone } = req.body;
-
-  const newUser = new User({
-    email,
-    first_name,
-    last_name,
-    telephone,
-    created_at: Date.now(),
-    modified_at: Date.now(),
-  });
+  const { email, first_name, last_name, telephone, password } = req.body;
 
   try {
+    // Validate email
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Validate password (example: minimum 8 characters, at least one letter and one number)
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        error:
+          "Password must be at least 8 characters long and contain at least one letter and one number",
+      });
+    }
+
+    // Check if a user with the same email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      email,
+      first_name,
+      last_name,
+      password: hashedPassword, // Store the hashed password
+      telephone,
+      created_at: Date.now(),
+      modified_at: Date.now(),
+    });
+
     const savedUser = await newUser.save();
     console.log("User saved successfully:", savedUser);
     res.status(200).json({ message: "User saved successfully" });
@@ -23,34 +49,32 @@ const saveUser = async (req, res) => {
   }
 };
 
-// const updateUser = async (req, res) => {
-//   const { email } = req.params;
-//   const { first_name, last_name, telephone } = req.body;
+const signInUser = async (req, res) => {
+  const { email, password } = req.body;
 
-//   try {
-//     const updatedUser = await User.findByIdAndUpdate(
-//       email,
-//       {
-//         first_name,
-//         last_name,
-//         telephone,
-//         modified_at: Date.now(),
-//       },
-//       { new: true }
-//     );
+  try {
+    // Validate email
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
 
-//     if (!updatedUser) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
 
-//     console.log("User updated successfully:", updatedUser);
-//     res
-//       .status(200)
-//       .json({ message: "User updated successfully", user: updatedUser });
-//   } catch (err) {
-//     console.error("Error updating user:", err);
-//     res.status(500).json({ error: "Error updating user" });
-//   }
-// };
+    // Compare the provided password with the stored hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
 
-module.exports = { saveUser };
+    res.status(200).json({ message: "Sign-in successful", user });
+  } catch (err) {
+    console.error("Error signing in user:", err);
+    res.status(500).json({ error: "Error signing in user" });
+  }
+};
+
+module.exports = { saveUser, signInUser };
