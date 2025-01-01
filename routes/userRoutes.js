@@ -4,7 +4,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/create:
+ * /api/user/login:
  *   post:
  *     summary: Create a new user
  *     tags: [User]
@@ -31,7 +31,7 @@ const router = express.Router();
  *       400:
  *         description: Error creating user
  */
-router.post("/api/users/create", saveUser);
+router.post("/api/user/login", saveUser);
 
 /**
  * @swagger
