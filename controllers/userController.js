@@ -5,23 +5,33 @@ const User = require("../models/user");
 
 const generateAccessToken = (user) => {
   return jwt.sign(
-    { _id: user._id, email: user.email },
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
+    },
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NTYiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE3MzU2ODcxNTh9.Jw_PYkwQBUwRxDYh7WCmVqL0aUphDoCesZrWzm_Tz4s",
-    { expiresIn: "1m" }
+    { expiresIn: "15m" }
   );
 };
 
 const generateRefreshToken = (user) => {
   return jwt.sign(
-    { _id: user._id, email: user.email },
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
+    },
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxMjM0NTYiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJleHAiOjE3MzYyOTEwNTh9.ZjxIcPmI9VPnenJAsMmFRo7CfcSalVHUHlQhRw7qllQ",
-    { expiresIn: "3m" }
+    { expiresIn: "7d" }
   );
 };
 
 const saveUser = async (req, res) => {
   console.log(req.body);
-  const { email, first_name, last_name, telephone, password } = req.body;
+  const { email, first_name, last_name, telephone, password, role } = req.body;
 
   try {
     // Validate email
@@ -53,6 +63,7 @@ const saveUser = async (req, res) => {
       last_name,
       password: hashedPassword, // Store the hashed password
       telephone,
+      role,
       created_at: Date.now(),
       modified_at: Date.now(),
     });

@@ -1,5 +1,5 @@
-const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
 
 const options = {
   definition: {
@@ -7,24 +7,19 @@ const options = {
     info: {
       title: "MERN Backend API",
       version: "1.0.0",
-      description: "API documentation for the MERN backend project",
     },
-    servers: [
-      {
-        url: "http://localhost:5001",
-      },
-    ],
     components: {
       securitySchemes: {
-        basicAuth: {
+        bearerAuth: {
           type: "http",
-          scheme: "basic",
+          scheme: "bearer",
+          bearerFormat: "JWT",
         },
       },
     },
     security: [
       {
-        basicAuth: [],
+        bearerAuth: [],
       },
     ],
   },
@@ -33,4 +28,7 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
-module.exports = { swaggerUi, specs };
+module.exports = {
+  swaggerUi,
+  specs,
+};

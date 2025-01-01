@@ -9,6 +9,7 @@ const {
 } = require("../controllers/productCategoryController");
 const basicAuth = require("../config/basicAuth");
 const authMiddleware = require("../config/authMiddleware");
+const adminMiddleware = require("../config/adminMiddleware");
 const router = express.Router();
 
 /**
@@ -18,7 +19,7 @@ const router = express.Router();
  *     summary: Add a new product category
  *     tags: [ProductCategory]
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -38,7 +39,12 @@ const router = express.Router();
  *       500:
  *         description: Error saving product category
  */
-router.post("/api/productCategory/add", authMiddleware, saveProductCategory);
+router.post(
+  "/api/productCategory/add",
+  authMiddleware,
+  adminMiddleware,
+  saveProductCategory
+);
 
 /**
  * @swagger
@@ -47,7 +53,7 @@ router.post("/api/productCategory/add", authMiddleware, saveProductCategory);
  *     summary: Get all product categories
  *     tags: [ProductCategory]
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of product categories
@@ -69,7 +75,7 @@ router.get(
  *     summary: Get a product category by ID
  *     tags: [ProductCategory]
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -94,7 +100,7 @@ router.get("/api/productCategory/get/:id", authMiddleware, getProductCategory);
  *     summary: Delete a product category by ID
  *     tags: [ProductCategory]
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -113,6 +119,7 @@ router.get("/api/productCategory/get/:id", authMiddleware, getProductCategory);
 router.delete(
   "/api/productCategory/delete/:id",
   authMiddleware,
+  adminMiddleware,
   deleteProductCategory
 );
 
@@ -123,7 +130,7 @@ router.delete(
  *     summary: Delete multiple product categories
  *     tags: [ProductCategory]
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -146,6 +153,7 @@ router.delete(
 router.delete(
   "/api/productCategory/deleteMany",
   authMiddleware,
+  adminMiddleware,
   deleteManyProductCategories
 );
 
@@ -156,7 +164,7 @@ router.delete(
  *     summary: Update a product category by ID
  *     tags: [ProductCategory]
  *     security:
- *       - basicAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -188,6 +196,7 @@ router.delete(
 router.put(
   "/api/productCategory/update/:id",
   authMiddleware,
+  adminMiddleware,
   updateProductCategory
 );
 

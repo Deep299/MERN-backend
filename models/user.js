@@ -1,3 +1,4 @@
+const e = require("express");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -39,6 +40,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    enum: ["admin", "user"],
     default: "user",
   },
 });
