@@ -13,25 +13,20 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  category_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "ProductCategory",
+  category: {
+    type: String,
     required: true,
   },
   inventory_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "ProductInventory",
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  discount_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Discount",
+    ref: "inventory",
     required: false,
   },
+  // discount_id: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Discount",
+  //   required: false,
+  // },
   created_at: {
     type: Date,
     default: Date.now,
@@ -43,6 +38,42 @@ const productSchema = new mongoose.Schema({
   deleted_at: {
     type: Date,
     default: null,
+  },
+  Images_Path: {
+    type: String,
+    required: false,
+  },
+  sku: {
+    type: String,
+    required: false,
+  },
+  title: {
+    type: String,
+    required: false,
+  },
+  vendor: {
+    type: String,
+    required: false,
+  },
+  Country: {
+    type: String,
+    required: false,
+  },
+  Region: {
+    type: String,
+    required: false,
+  },
+  taxable: {
+    type: Boolean,
+    required: false,
+  },
+  brand: {
+    type: String,
+    required: false,
+  },
+  img: {
+    type: String,
+    required: false,
   },
 });
 
