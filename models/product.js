@@ -9,24 +9,18 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  SKU: {
-    type: String,
-    required: true,
-  },
   category: {
     type: String,
     required: true,
   },
-  inventory_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "inventory",
+  subCategory: {
+    type: String,
     required: false,
   },
-  // discount_id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Discount",
-  //   required: false,
-  // },
+  discount: {
+    type: String,
+    required: false,
+  },
   created_at: {
     type: Date,
     default: Date.now,
@@ -38,14 +32,6 @@ const productSchema = new mongoose.Schema({
   deleted_at: {
     type: Date,
     default: null,
-  },
-  Images_Path: {
-    type: String,
-    required: false,
-  },
-  sku: {
-    type: String,
-    required: false,
   },
   title: {
     type: String,

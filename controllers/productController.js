@@ -1,67 +1,54 @@
 const Product = require("../models/product");
 const Inventory = require("../models/inventory");
 
-// Create a new product
-exports.createProduct = async (req, res) => {
+const getAllProducts = async (req, res) => {
   try {
-    const product = new Product(req.body);
-    await product.save();
-    res.status(201).send(product);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-};
+    // Use aggregate to join products with their inventories
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: "inventories", // The collection name in MongoDB
+          localField: "_id",
+          foreignField: "product_id",
+          as: "inventories",
+        },
+      },
+    ]);
 
-// Get all products with inventory data
-exports.getAllProducts = async (req, res) => {
-  try {
-    const products = await Product.find().populate("inventory_id");
-    res.status(200).send(products);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-// Get a product by ID with inventory data
-exports.getProductById = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id).populate(
-      "inventory_id"
-    );
-    if (!product) {
-      return res.status(404).send();
-    }
-    res.status(200).send(product);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-// Update a product by ID
-exports.updateProductById = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
+    // Format response as per the provided JSON structure
+    const formattedProducts = products.map((product) => {
+      return {
+        name: product.name,
+        desc: product.desc,
+        category: product.category,
+        subCategory: product.subCategory,
+        discount: product.discount || "No discount", // Default to "No discount" if not available
+        inventories: product.inventories.map((inventory) => ({
+          available: inventory.available,
+          price: inventory.price,
+          SKU: inventory.SKU,
+          tags: inventory.tags || [], // Default to empty array if no tags
+          size: inventory.size || "N/A", // Default size to "N/A" if not provided
+        })),
+        created_at: product.created_at,
+        modified_at: product.modified_at,
+        deleted_at: product.deleted_at,
+        vendor: product.vendor || "Unknown Vendor",
+        Country: product.Country || "Unknown Country",
+        Region: product.Region || "Unknown Region",
+        taxable: product.taxable,
+        brand: product.brand || "Unknown Brand",
+        img: product.img || "", // Empty string if no image path
+      };
     });
-    if (!product) {
-      return res.status(404).send();
-    }
-    res.status(200).send(product);
+
+    // Return formatted products as JSON
+    res.status(200).json(formattedProducts);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).json({ message: "Error fetching products", error });
   }
 };
 
-// Delete a product by ID
-exports.deleteProductById = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) {
-      return res.status(404).send();
-    }
-    res.status(200).send(product);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+module.exports = {
+  getAllProducts,
 };

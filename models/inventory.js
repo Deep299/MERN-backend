@@ -1,15 +1,6 @@
 const mongoose = require("mongoose");
 
 const inventorySchema = new mongoose.Schema({
-  ProductVolumeId: {
-    type: Number,
-    required: true,
-  },
-  ProductId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
   available: {
     type: Boolean,
     required: true,
@@ -20,6 +11,23 @@ const inventorySchema = new mongoose.Schema({
   },
   quantity: {
     type: Number,
+    required: true,
+  },
+  size: {
+    type: String,
+    required: false,
+  },
+  tags: {
+    type: [String],
+    required: false,
+  },
+  SKU: {
+    type: String,
+    required: true,
+  },
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product",
     required: true,
   },
 });
