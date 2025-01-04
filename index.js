@@ -5,7 +5,7 @@ const userRoutes = require("./routes/userRoutes");
 const productCategoryRoutes = require("./routes/productCategoryRoutes");
 const { swaggerUi, specs } = require("./config/swaggerConfig");
 const productRoutes = require("./routes/productRoutes");
-const inventoryRoutes = require("./routes/InventoryRoutes");
+const inventoryRoutes = require("./routes/inventoryRoutes");
 
 const app = express();
 const PORT = 5001;
