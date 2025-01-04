@@ -49,6 +49,17 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+const addProduct = async (req, res) => {
+  try {
+    const newProduct = new Product(req.body);
+    const savedProduct = await newProduct.save();
+    res.status(201).json(savedProduct);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding product", error });
+  }
+};
+
 module.exports = {
   getAllProducts,
+  addProduct,
 };
