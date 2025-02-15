@@ -5,12 +5,16 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  price: {
+    type: Number,
+    required: true,
+  },
   desc: {
     type: String,
     required: false,
   },
   category: {
-    type: String,
+    type: [String],
     required: true,
   },
   subCategory: {
@@ -19,6 +23,18 @@ const productSchema = new mongoose.Schema({
   },
   discount: {
     type: String,
+    required: false,
+  },
+  size: {
+    type: String,
+    required: false,
+  },
+  SKU: {
+    type: String,
+    required: false,
+  },
+  tags: {
+    type: [String],
     required: false,
   },
   created_at: {
@@ -32,10 +48,6 @@ const productSchema = new mongoose.Schema({
   deleted_at: {
     type: Date,
     default: null,
-  },
-  title: {
-    type: String,
-    required: false,
   },
   vendor: {
     type: String,
@@ -61,7 +73,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  stock: {
+    type: Number,
+    required: true,
+  },
 });
+
 
 const Product = mongoose.model("Product", productSchema);
 

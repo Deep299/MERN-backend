@@ -5,6 +5,7 @@ const userRoutes = require("./routes/userRoutes");
 const productCategoryRoutes = require("./routes/productCategoryRoutes");
 const { swaggerUi, specs } = require("./config/swaggerConfig");
 const productRoutes = require("./routes/productRoutes");
+const paymentRoutes = require('./routes/paymentRoutes');
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const webUserRoutes = require('./routes/webUserRoutes');
 
@@ -22,7 +23,7 @@ app.use(productCategoryRoutes);
 app.use(productRoutes);
 app.use(inventoryRoutes);
 app.use(webUserRoutes);
-
+app.use(paymentRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

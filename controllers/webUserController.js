@@ -11,11 +11,11 @@ const createWebUser = async (user) => {
 
   try {
     // Check if a user with the same email already exists
-    const existingUser = await WebUser.findOne({ email });
+    const existingUser = await WebUser.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
     if (existingUser) {
       return false; 
     }
-    const user = await WebUser.findOne({ username });
+    const user = await WebUser.findOne({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
     if (user) {
       return false; 
     }
@@ -42,7 +42,7 @@ const loginWebUser = async (req, res) => {
     const { username, password } = req.body;
   
     try {
-      const user = await WebUser.findOne({ username });
+      const user = await WebUser.findOne({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
       if (!user) {
         return res.status(400).json({ error: "Invalid username or password" });
       }
@@ -53,7 +53,7 @@ const loginWebUser = async (req, res) => {
         return res.status(400).json({ error: "Invalid username or password" });
       }
   
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: user._id , username: user.username}, process.env.JWT_SECRET, { expiresIn: '1h' });
       const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
       const newWebUserLogin = new WebUserLogin({
@@ -71,11 +71,15 @@ const loginWebUser = async (req, res) => {
     }
   };
 
-  const checkUserExistence = async (req, res) => {
+const checkUserExistence = async (req, res) => {
     const { username, email } = req.body;
-  
     try {
-        const user = await WebUser.findOne({ $or: [{ username }, { email }] });
+        const user = await WebUser.findOne({ 
+          $or: [
+            { username: { $regex: new RegExp(`^${username}$`, 'i') } }, 
+            { email: { $regex: new RegExp(`^${email}$`, 'i') } }
+          ] 
+         });
         if (user) {
           return res.status(200).json({ exists: true });
         } else {
@@ -84,16 +88,16 @@ const loginWebUser = async (req, res) => {
     } catch (err) {
       res.status(500).json({ error: "Error checking user existence" });
     }
-  };
-  
+};
 
-  const sendOtp = async (req, res) => {
+const sendOtp = async (req, res) => {
     const { email, username } = req.body;
+    const lowerEmail = email.toLowerCase();
     const currentDate = new Date().toISOString().split('T')[0];
   
     try {
-      const existingEmail = await WebUser.findOne({ email });
-      const existingUsername = await WebUser.findOne({ username });
+      const existingEmail = await WebUser.findOne({ email: { $regex: new RegExp(`^${lowerEmail}$`, 'i') } });
+      const existingUsername = await WebUser.findOne({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
   
       if (existingEmail) {
         return res.status(400).json({ message: 'Email is already taken' });
@@ -104,7 +108,7 @@ const loginWebUser = async (req, res) => {
       }
   
       const otpCountToday = await OTP.countDocuments({
-        email: email,
+        email: lowerEmail,
         date: currentDate,
       });
   
@@ -121,16 +125,15 @@ const loginWebUser = async (req, res) => {
   
       const expiresAt = new Date(Date.now() + 3 * 60 * 1000);
   
-      const existingOtp = await OTP.findOne({ email, isExpire: false });
+      const existingOtp = await OTP.findOne({ email: { $regex: new RegExp(`^${lowerEmail}$`, 'i') }, isExpire: false });
   
       if (existingOtp) {
         existingOtp.isExpire = true;
         await existingOtp.save();
       }
   
-  
       const otpDoc = new OTP({
-        email: email,
+        email: lowerEmail,
         otp: otp,
         expiresAt: expiresAt,
         isExpire: false, 
@@ -146,13 +149,14 @@ const loginWebUser = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Server error', error });
     }
-  };
+};
 
-  const verifyOtp = async (req, res) => {
+const verifyOtp = async (req, res) => {
     const { email, otp, username, password } = req.body;
+    const lowerEmail = email.toLowerCase();
   
-    
-      const otpDoc = await OTP.findOne({ email, isExpire: false });
+    try {
+      const otpDoc = await OTP.findOne({ email: { $regex: new RegExp(`^${lowerEmail}$`, 'i') }, isExpire: false });
   
       if (!otpDoc) {
         return res.status(400).json({ message: 'OTP not found for the given email or has expired' });
@@ -165,17 +169,29 @@ const loginWebUser = async (req, res) => {
       }
 
       if (otpDoc.otp === otp) {
-  
-        const savedWebUser = await createWebUser({ username, email, password });
+        const savedWebUser = await createWebUser({ username, email: lowerEmail, password });
         if (!savedWebUser) {
-          return res.status(400).json({ message: "Somthing is wrong" }); 
-        }
-        else{
-          res.status(200).json({ message: 'OTP verified and user created successfully' });
+          return res.status(400).json({ message: "Something is wrong" }); 
+        } else {
+          const user = await WebUser.findOne({ username: { $regex: new RegExp(`^${username}$`, 'i') } });
+          const token = jwt.sign({ id: user._id , username: user.username}, process.env.JWT_SECRET, { expiresIn: '1h' });
+          const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+          const newWebUserLogin = new WebUserLogin({
+            user_id: user._id,
+            login_time: Date.now(),
+            chrom_ip: clientIp,
+            token,
+          });
+          await newWebUserLogin.save();
+          res.status(200).json({ message: 'OTP verified and user created successfully', token });
         }
       } else {
         return res.status(400).json({ message: 'Invalid OTP' });
       }
-  };
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
+    }
+};
 
-module.exports = {loginWebUser, checkUserExistence, sendOtp, verifyOtp };
+module.exports = { loginWebUser, checkUserExistence, sendOtp, verifyOtp };
