@@ -3,33 +3,21 @@ const Inventory = require("../models/inventory");
 
 const getAllProducts = async (req, res) => {
   try {
-    // Use aggregate to join products with their inventories
-    const products = await Product.aggregate([
-      {
-        $lookup: {
-          from: "inventories", // The collection name in MongoDB
-          localField: "_id",
-          foreignField: "product_id",
-          as: "inventories",
-        },
-      },
-    ]);
+    const products = await Product.find();
 
     // Format response as per the provided JSON structure
     const formattedProducts = products.map((product) => {
       return {
+        ProductId: product.ProductId,
         name: product.name,
+        price: product.price,
         desc: product.desc,
         category: product.category,
         subCategory: product.subCategory,
         discount: product.discount || "No discount", // Default to "No discount" if not available
-        inventories: product.inventories.map((inventory) => ({
-          available: inventory.available,
-          price: inventory.price,
-          SKU: inventory.SKU,
-          tags: inventory.tags || [], // Default to empty array if no tags
-          size: inventory.size || "N/A", // Default size to "N/A" if not provided
-        })),
+        size: product.size || "N/A", // Default size to "N/A" if not provided
+        SKU: product.SKU,
+        tags: product.tags || [], // Default to empty array if no tags
         created_at: product.created_at,
         modified_at: product.modified_at,
         deleted_at: product.deleted_at,
@@ -39,6 +27,7 @@ const getAllProducts = async (req, res) => {
         taxable: product.taxable,
         brand: product.brand || "Unknown Brand",
         img: product.img || "", // Empty string if no image path
+        stock: product.stock,
       };
     });
 
