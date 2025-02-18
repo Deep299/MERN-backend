@@ -22,6 +22,12 @@ const options = {
         bearerAuth: [],
       },
     ],
+    servers: [
+      {
+        url: "http://localhost:5001", // Change to production URL if needed
+        description: "Development server",
+      },
+    ],
   },
   apis: ["./routes/*.js"], // Path to the API docs
 };
