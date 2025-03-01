@@ -8,7 +8,7 @@ const getAllProducts = async (req, res) => {
     // Format response as per the provided JSON structure
     const formattedProducts = products.map((product) => {
       return {
-        ProductId: product.ProductId,
+        ProductId: product._id,
         name: product.name,
         price: product.price,
         desc: product.desc,

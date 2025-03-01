@@ -24,7 +24,7 @@ const options = {
     ],
     servers: [
       {
-        url: "http://localhost:5001", // Change to production URL if needed
+        url: "https://enterprise-api.shop", // Change to production URL if needed
         description: "Development server",
       },
     ],
