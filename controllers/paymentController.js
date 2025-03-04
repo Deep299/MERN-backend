@@ -8,7 +8,7 @@ const createPaymentIntent = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPence,
       currency: 'gbp',
-      payment_method_types: ['card', 'klarna', 'paypal'],
+      payment_method_types: ['card'],
       metadata: { integration_check: 'accept_a_payment' },
     });
     res.send({
